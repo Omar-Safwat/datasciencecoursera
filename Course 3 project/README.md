@@ -159,11 +159,11 @@ The sensor signals (accelerometer and gyroscope) were pre-processed by applying 
 
 * _'train/subject_train.txt'_: Each row identifies the subject who performed the activity for each window sample. Its range is from 1 to 30. 
 
-* _'train/Inertial Signals/total_acc_x_train.txt'_: _**The acceleration signal from the smartphone accelerometer X axis in standard gravity units 'g'**_. Every row shows a 128 element vector. The same description applies for the 'total_acc_x_train.txt' and 'total_acc_z_train.txt' files for the Y and Z axis. 
+* _'train/Inertial Signals/total_acc_x_train.txt'_: ***The acceleration signal from the smartphone accelerometer X axis in standard gravity units 'g'***. Every row shows a 128 element vector. The same description applies for the 'total_acc_x_train.txt' and 'total_acc_z_train.txt' files for the Y and Z axis. 
 
 * _'train/Inertial Signals/body_acc_x_train.txt'_: The body acceleration signal obtained by subtracting the gravity from the total acceleration. 
 
-* _'train/Inertial Signals/body_gyro_x_train.txt'_: The angular velocity vector measured by the gyroscope for each window sample. _**The units are radians/second.** _
+* _'train/Inertial Signals/body_gyro_x_train.txt'_: The angular velocity vector measured by the gyroscope for each window sample. ***The units are radians/second.** *
 
 ## Notes
 
@@ -226,10 +226,6 @@ Variable | Description
 ---------|------------
 subjects | Values from 1 to 30 to identify the subject carrying out the experiment.
 activity | Specifies what type of activity the subject was performing.
-
-## Units
-* The acceleration signal from the smartphone accelerometer X axis in standard gravity units 'g'.
-* 
 
 ## List of all the variables as acquired from "features.txt"
 
