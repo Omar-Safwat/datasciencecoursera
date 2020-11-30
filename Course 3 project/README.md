@@ -33,12 +33,12 @@ Data from *"subject_test.txt"*, and *"y_test.txt"* are to be column bound with *
 # R script *"run_analysis.R"*
 
 The script uses *tibbles* and other functions from the *dplyr* package.
-```{r}
+```r
 library(dplyr)
 ```
 
 First, each of the scattered "test" data was read independently in the following code section:
-```{r}
+```r
 ##First read each of the data independently:
 #------------------------------------------
 
@@ -53,7 +53,7 @@ subject_test <- read.table("UCI HAR Dataset/test/subject_test.txt")
 features <- read.table("UCI HAR Dataset/features.txt",colClasses = c("NULL", "character"))
 ```
 and then assembled here using the *tibble()* function for its special printing properties. The list object "feature" containing column names is matched with the generated *tibble()*, to assign the header names.
-```{r}
+```r
 ##Second assemble the data:
 #-------------------------
 
@@ -63,7 +63,7 @@ testData <- tibble(subject_test, y_test, as_tibble(x_test), .name_repair = "mini
 testData <- setNames(testData, c("subject", "activity", features[[1]]))
 ```
 The same process is repeated here for the "train" data.
-```{r}
+```r
 ## Reading and assembling the "training" data.
 
 ##First read each of the data independently:
