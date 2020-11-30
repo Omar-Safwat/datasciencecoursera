@@ -125,3 +125,4 @@ for(i in seq_along(1:30))
 #Tibble containing average values
 avg_data <- arrange(avg_data, activity, subject)
 ```
+**Please resort to the code book available on this repository for the discussion over the structure of the tidy set and its variables "features".**
