@@ -26,7 +26,7 @@ In this section, I will illustrate the process I followed for the purpose of col
 
 To start of, the first assignment was to merge the two data sets **train** and **test**. However, both data sets were scattered and in an unreadable state. 
 
-The readings obtained from the accelerometers and Gyro were stored in text files *"X_test.txt"* and *"X_train.txt"*, where both are of **561** columns (Each column represents a variable). Variable names or column headers are stored in *"features.txt"*, where each row contains the name of one variable, summing up to a file of 561 rows.
+The readings obtained from the accelerometers and Gyro were stored in text files *"X_test.txt"* and *"X_train.txt"*, where both are of **561** columns (Each column represents a variable). Variable names or column headers are stored in *"features.txt"*, where each row contains the name of one variable, summing up to a file of **561** rows.
 
 Data from *"subject_test.txt"*, and *"y_test.txt"* are to be column bound with *"X_test.txt"*. The same process is repeated similarly for the "train"" data set, thus forming a complete tidy data table for each of the two data sets.
 
@@ -88,12 +88,12 @@ trainData <- tibble(subject_train, y_train, as_tibble(x_train), .name_repair = "
 trainData <- setNames(trainData, c("subject", "activity", features[[1]]))
 ```
 Finally, both tables ("testData"" and "trainData") are merged together as was stated in the assignment, using the *rbind()* function in R, since both have the same column names and width.
-```
+```r
 #Merge the training and test dataset
 merged <- rbind(trainData, testData)
 ```
 Next, the *mean* and *standard deviation* variables were to be extracted from this merged data set. This is achieved here using the *grep()* function and utilizing the Regular expressions learned in the 4th week of this course. Furthermore, all values under the variable *"activity"* were to be replaced with more descriptive values, i.e., "WALKING" instead of "1".
-```
+```r
 #Extract variables with mean or std.
 extracted <- grep(".[Mm]ean|.[Ss]td", names(merged) ,value = TRUE)
 merged <- select(merged, subject:activity, all_of(extracted))
@@ -107,7 +107,7 @@ for(i in seq_along(my_labels$V2))
 ```
 
 Finally, a new tidy data set was created to store the average of each variable, with respect to each subject for every activity type.
-```
+```r
 #Finding the average for each subject and each activity
 avg_data <- tibble() 
 for(i in seq_along(1:30))
