@@ -10,9 +10,30 @@ urlcolor: blue
 * The acceleration signals from the smartphone accelerometer are in **standard gravity units** 'g'
 * The angular velocity vectors, measured by the gyroscope for each window sample, are in **radians / seconds**. 
 
-# Structure of the data
+# features info 
 
-The data is represented in R as a ***tibble()*** object from the ***dplyr*** package. The tibble "merged" in "run_analysis.R" represents the tidy version merging of the two data sets, 
+The features selected for this database come from the accelerometer and gyroscope 3-axial raw signals *tAcc-XYZ* and *tGyro-XYZ*, where:
+
+* The prefix "t" denotes the time domain.
+* '-XYZ' is used to denote 3-axial signals in the X, Y and Z directions. 
+
+The acceleration signal was then separated into body and gravity acceleration signals:
+
+ * tBodyAcc-XYZ  
+ * tGravityAcc-XYZ*
+
+Subsequently, the body linear acceleration and angular velocity were derived in time to obtain Jerk signals:
+
+* tBodyAccJerk-XYZ
+* tBodyGyroJerk-XYZ
+
+Also the magnitude of these three-dimensional signals were calculated
+
+* tBodyAccMag
+* tGravityAccMag
+* tBodyAccJerkMag
+* tBodyGyroMag
+* tBodyGyroJerkMag.
 
 The set of variables that were estimated from these signals are: 
 
@@ -36,14 +57,18 @@ kurtosis()| kurtosis of the frequency domain signal
 bandsEnergy()| Energy of a frequency interval within the 64 bins of the FFT of each window.
 angle()| Angle between to vectors.
 
+## "tidy_merged" data table structure
 
-In addition, the following variables were added to produce a tidy data table:
+The data is represented in R as a ***tibble()*** object from the ***dplyr*** package. Please refer to the "README.md" file on this repository for information on how this tibble object was created.
+
+The tibble consists of 10,299 observations and 563 variables, which is an *acceptable* wide *tidy data format* as per [Hadley Wickam's paper](https://vita.had.co.nz/papers/tidy-data.pdf).
+
+The first two columns consist of:
 
 Variable | Description
 ---------|------------
 subjects | Values from 1 to 30 to identify the subject carrying out the experiment.
 activity | Specifies what type of activity the subject was performing.
-
 ## List of all the variables as acquired from "features.txt"
 
 Column No. | Name
