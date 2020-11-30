@@ -180,23 +180,23 @@ Finally a Fast Fourier Transform (FFT) was applied to some of these signals prod
 These signals were used to estimate variables of the feature vector for each pattern:  
 '-XYZ' is used to denote 3-axial signals in the X, Y and Z directions.
 
-*tBodyAcc-XYZ
-*tGravityAcc-XYZ
-*tBodyAccJerk-XYZ
-*tBodyGyro-XYZ
-*tBodyGyroJerk-XYZ
-*tBodyAccMag
-*tGravityAccMag
-*tBodyAccJerkMag
-*tBodyGyroMag
-*tBodyGyroJerkMag
-*fBodyAcc-XYZ
-*fBodyAccJerk-XYZ
-*fBodyGyro-XYZ
-*fBodyAccMag
-*fBodyAccJerkMag
-*fBodyGyroMag
-*fBodyGyroJerkMag
+* tBodyAcc-XYZ
+* tGravityAcc-XYZ
+* tBodyAccJerk-XYZ
+* tBodyGyro-XYZ
+* tBodyGyroJerk-XYZ
+* tBodyAccMag
+* tGravityAccMag
+* tBodyAccJerkMag
+* tBodyGyroMag
+* tBodyGyroJerkMag
+* fBodyAcc-XYZ
+* fBodyAccJerk-XYZ
+* fBodyGyro-XYZ
+* fBodyAccMag
+* fBodyAccJerkMag
+* fBodyGyroMag
+* fBodyGyroJerkMag
 
 The set of variables that were estimated from these signals are: 
 
@@ -221,7 +221,8 @@ bandsEnergy()| Energy of a frequency interval within the 64 bins of the FFT of e
 angle()| Angle between to vectors.
 
 
-In addition, in an attempt to produce a tidy data, the following variables were added:
+In addition, the following variables were added to produce a tidy data table:
+
 Variable | Description
 ---------|------------
 subjects | Values from 1 to 30 to identify the subject carrying out the experiment.
@@ -229,7 +230,7 @@ activity | Specifies what type of activity the subject was performing.
 
 ## List of all the variables as acquired from "features.txt"
 
-No. | Name
+Column No. | Name
 ----|------
 1 | tBodyAcc-mean()-X
 2 | tBodyAcc-mean()-Y
