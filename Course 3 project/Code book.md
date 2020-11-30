@@ -57,18 +57,25 @@ kurtosis()| kurtosis of the frequency domain signal
 bandsEnergy()| Energy of a frequency interval within the 64 bins of the FFT of each window.
 angle()| Angle between to vectors.
 
-## "tidy_merged" data table structure
+## "tidy data" structure
 
 The data is represented in R as a ***tibble()*** object from the ***dplyr*** package. Please refer to the "README.md" file on this repository for information on how this tibble object was created.
 
-The tibble consists of 10,299 observations and 563 variables, which is an *acceptable* wide *tidy data format* as per [Hadley Wickam's paper](https://vita.had.co.nz/papers/tidy-data.pdf).
+The first tibble "tidy_merged" consists of **10,299** observations and **563** variables, which is an *acceptable* wide *tidy data format* as per [Hadley Wickam's paper](https://vita.had.co.nz/papers/tidy-data.pdf).
 
-The first two columns consist of:
+The second tibble "tidy2" consists of **10,299** obesrvation and the **88** feature variables containtin containing the words "[Mm]ean" or "[Ss]td".
+
+The third tibble "tidy_avg" calculates the average of each column in "tidy2" for each subject and every activity. The tibble consists of **180** observations and **88** columns.
+
+## Columns
+
+The first two columns of every tibble are:
 
 Variable | Description
 ---------|------------
 subjects | Values from 1 to 30 to identify the subject carrying out the experiment.
 activity | Specifies what type of activity the subject was performing.
+
 ## List of all the variables as acquired from "features.txt"
 
 Column No. | Name
