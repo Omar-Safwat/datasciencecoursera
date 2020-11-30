@@ -92,37 +92,37 @@ trainData <- setNames(trainData, c("subject", "activity", features[[1]]))
 Finally, both tables ("testData"" and "trainData") are merged together as was stated in the assignment, using the ***rbind()*** function in R, since both have the same column names and width.
 ```r
 #Merge the training and test dataset
-merged <- rbind(trainData, testData)
+tidy_merged <- rbind(trainData, testData)
 ```
 Next, the *mean* and *standard deviation* variables were to be extracted from this merged data set. Since this is an "open" project, the choice is left to the student, which mean and std variables should be extracted, consequently, I chose to extract all variables with the words *"[Mm]ean"* or *"[Ss]td"*, regardless of their position in the variable's name. This is achieved here using the ***grep()*** function and by utilizing the Regular expressions learned in the 4th week of this course. Furthermore, all values under the variable *"activity"* were to be replaced with more descriptive values, i.e., "WALKING" instead of "1".
 ```r
 #Extract variables with mean or std.
 extracted <- grep(".[Mm]ean|.[Ss]td", names(merged) ,value = TRUE)
-merged <- select(merged, subject:activity, all_of(extracted))
+tidy2 <- select(tidy_merged, subject:activity, all_of(extracted))
 
 #Fill in descriptive names under variable "activity"
 my_labels <- read.table("UCI HAR Dataset/activity_labels.txt", colClasses = c("NULL", "character"))
 for(i in seq_along(my_labels$V2))
 {
-  merged$activity <- sub(as.character(i), my_labels$V2[i], merged$activity)
+  tidy2$activity <- sub(as.character(i), my_labels$V2[i], tidy2$activity)
 }
 ```
 
 Finally, a new tidy data set was created to store the average of each variable, with respect to each subject for every activity type.
 ```r
 #Finding the average for each subject and each activity
-avg_data <- tibble() 
+tidy_avg <- tibble() 
 for(i in seq_along(1:30))
 {
   for(j in seq_along(my_labels$V2))
   {
-    sub_data <- filter(merged, subject == i & activity == my_labels$V2[j])
+    sub_data <- filter(tidy2, subject == i & activity == my_labels$V2[j])
     avg_tibble <- select(sub_data, -(subject:activity)) %>% lapply(mean) %>% as_tibble()
-    avg_data <- sub_data[1,c("subject", "activity")] %>% tibble(avg_tibble)%>% 
-    rbind(avg_data)
+    tidy_avg <- sub_data[1,c("subject", "activity")] %>% tibble(avg_tibble)%>% 
+    rbind(tidy_avg)
   }
 }
 #Tibble containing average values
-avg_data <- arrange(avg_data, activity, subject)
+tidy_avg <- arrange(avg_data, activity, subject)
 ```
 **Please resort to the code book available on this repository for the discussion over the structure of the tidy set and its variables "features".**
