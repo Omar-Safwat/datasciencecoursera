@@ -78,6 +78,8 @@ activity | Specifies what type of activity the subject was performing.
 
 ## List of all the variables as acquired from "features.txt"
 
+The names of features are descriptive and consice enough, therefore, they were not altered. Furthermore, decomposing them would have resulted in a confusing data set with alot of "NA" values.
+
 Column No. | Name
 ----|------
 1 | tBodyAcc-mean()-X
