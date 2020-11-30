@@ -26,9 +26,9 @@ In this section, I will illustrate the process I followed for the purpose of col
 
 To start of, the first assignment was to merge the two data sets **train** and **test**. However, both data sets were scattered and in an unreadable state. 
 
-The readings obtained from the accelerometers and Gyro were stored in text files *"X_test.txt"* and *"X_train.txt"*, where both are of **561** columns (Each column represents a variable). Variable names or column headers are stored in *"features.txt"*, where each row contains the name of one variable, summing up to a file of **561** rows.
+The readings obtained from the accelerometers and Gyro were stored in text files ***"X_test.txt"*** and ***"X_train.txt"***, where both contatin **561** columns (Each column represents a variable). Variable names or column headers are stored in *"features.txt"*, where each row contains the name of one variable, summing up to a total of **561** rows.
 
-Data from *"subject_test.txt"*, and *"y_test.txt"* are to be column bound with *"X_test.txt"*. The same process is repeated similarly for the "train"" data set, thus forming a complete tidy data table for each of the two data sets.
+Data from ***"subject_test.txt"***, and ***"y_test.txt"*** are to be column bound with ***"X_test.txt"***. The same process is then similarly repeated for the **train** data set, thus forming a complete tidy data table for each of the two data sets.
 
 # R script *"run_analysis.R"*
 
