@@ -1,10 +1,18 @@
-# Code book
+---
+title: "Code book"
+author: "Omar Safwat"
+date: "29/11/2020"
+output: md_file
+urlcolor: blue
+---
+# Units
 
+* The acceleration signals from the smartphone accelerometer are in **standard gravity units** 'g'
+* The angular velocity vectors, measured by the gyroscope for each window sample, are in **radians / seconds**. 
 
-## Notes
+# Structure of the data
 
-* Features are normalized and bounded within [-1,1].
-* Each feature vector is a row on the text file.
+The data is represented in R as a ***tibble()*** object from the ***dplyr*** package. The tibble "merged" in "run_analysis.R" represents the tidy version merging of the two data sets, 
 
 The set of variables that were estimated from these signals are: 
 
