@@ -1,16 +1,51 @@
 # Introduction
 
-The programming assignment requires writing an R function is able to cache potentially time-consuming computations. This Programming Assignment will take advantage of the scoping rules of the R language and how they can be manipulated to preserve state inside of an R object.
-The assignment is to write a pair of functions that cache the inverse of a matrix.
+This project requires the data from the Hospital Compare web site (http://hospitalcompare.hhs.gov)
+run by the U.S. Department of Health and Human Services. The purpose of the web site is to provide data and
+information about the quality of care at over 4,000 Medicare-certifed hospitals in the U.S. This dataset es-
+sentially covers all major U.S. hospitals.
 
-## Assignment
+The assignment is to be graded with a quiz. Questions can be found in questions.md on this repository.
+# Assignments
 
-Write the following functions:
+## 1. Plot the 30-day mortality rates for heart attack
 
-1. makeCacheMatrix: This function creates a special "matrix" object that can cache its inverse.
-2. cacheSolve: This function computes the inverse of the special "matrix" returned by makeCacheMatrix above. If the inverse has already been calculated (and the matrix has not changed), then the cachesolve should retrieve the inverse from the cache.
-3. Computing the inverse of a square matrix can be done with the solve function in R. For example, if X is a square invertible matrix, then solve(X) returns its inverse.
+Make a simple histogram of the 30-day death rates from heart attack.
 
+## 2. Finding the best hospital in a state
 
+Write a function called best that take two arguments: the 2-character abbreviated name of a state and an
+outcome name. The function reads the outcome-of-care-measures.csv file and returns a character vector
+with the name of the hospital that has the best (i.e. lowest) 30-day mortality for the specifed outcome
+in that state. The hospital name is the name provided in the Hospital.Name variable. The outcomes can
+be one of \heart attack", \heart failure", or \pneumonia". Hospitals that do not have data on a particular
+outcome should be excluded from the set of hospitals when deciding the rankings.
 
+The function should check the validity of its arguments. If an invalid state value is passed to best, the
+function should throw an error via the stop function with the exact message \invalid state". If an invalid
+outcome value is passed to best, the function should throw an error via the stop function with the exact
+message \invalid outcome".
 
+## 3. Ranking hospitals by outcome in a state
+
+Write a function called rankhospital that takes three arguments: the 2-character abbreviated name of a
+state (state), an outcome (outcome), and the ranking of a hospital in that state for that outcome (num).
+The function reads the outcome-of-care-measures.csv file and returns a character vector with the name
+of the hospital that has the ranking specifed by the num argument.
+
+The num argument can take values \best", \worst", or an integer indicating the ranking
+(smaller numbers are better). If the number given by num is larger than the number of hospitals in that
+state, then the function should return NA. Hospitals that do not have data on a particular outcome should
+be excluded from the set of hospitals when deciding the rankings.
+
+## 4. Ranking hospitals in all states
+
+Write a function called rankall that takes two arguments: an outcome name (outcome) and a hospital rank-
+ing (num). The function reads the outcome-of-care-measures.csv file and returns a 2-column data frame
+containing the hospital in each state that has the ranking specifed in num. For example the function call
+rankall("heart attack", "best") would return a data frame containing the names of the hospitals that
+are the best in their respective states for 30-day heart attack death rates. The function should return a value
+for every state (some may be NA). The first column in the data frame is named hospital, which contains
+the hospital name, and the second column is named state, which contains the 2-character abbreviation for
+the state name. Hospitals that do not have data on a particular outcome should be excluded from the set of
+hospitals when deciding the rankings.
