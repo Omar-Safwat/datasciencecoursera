@@ -1,0 +1,205 @@
+---
+title: "Health and Economic Consequences of Severe Weather Events"
+author: "Omar Safwat"
+date: "12/9/2020"
+output: html_document
+---
+
+# SYNOPSIS
+
+This document presents an analysis of the NOAA Storm Database, addressing the economical and health consequences of severe weather events. The data records events taking place between 1950 and 2011 across the USA. The analysis was conducted by reading set of data recording information relevant to Property damage, Crop damage in USD, in addition to number of Fatalities and Injuries. The analysis shows that Tornado and Flooding events have the highest health and economical impact, respectively.
+
+# 1. DATA PROCESSING
+
+Attaching the required packages
+
+```{r message=FALSE}
+library(data.table)
+library(stringdist)
+library(dplyr)
+library(ggplot2)
+```
+
+## 1.1. Reading the data
+
+The [NOAA Storm Data](https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2FStormData.csv.bz2) was acquired in .bz2 format. In addition, The [Storm Data Documentation](https://d396qusza40orc.cloudfront.net/repdata%2Fpeer2_doc%2Fpd01016005curr.pdf) and [FAQ](https://d396qusza40orc.cloudfront.net/repdata%2Fpeer2_doc%2FNCDC%20Storm%20Events-FAQ%20Page.pdf) were consulted to interpret the data structure, and, therefore, drive the data processing.
+
+To start off, the Storm data in .bz2 format was directly read by the function ```fread()``` from the data.table package. Since the raw data consists of approximately 900 thousand rows and 37 columns, only columns relevant to economical damage and public health were kept.
+
+```{r readData, cache = TRUE}
+data <- fread("repdata_data_StormData.csv.bz2", select = c(7:8, 23:28), data.table = FALSE)
+head(data)
+```
+
+## 1.2. Processing Event Types
+
+After careful inspection of the values under the variable EVTYPE, I've noticed that many
+values were written as a combination of several of the distinct 48 Event types defined in the Storm Data Documentation, section 2.1.1. 
+Furthermore, the values under EVTYPE column are not written consistently, and several typos have been spotted resulting in almost a 1000 unique values, as opposed to the confirmed 48 values in the Data document, as seen below.
+
+```{r}
+length(unique(data$EVTYPE))
+```
+
+Subsequently, this particular column necessitates additional processing steps. First, I'll attempt to unite these synonymous values, by converting all of them to lower cases, and remove all unnecessary spaces or extra back and forward slashes, as well as punctuation and numeric. As seen below, after this subtle manipulation the numbers are already down to 758.
+```{r}
+#Converting all names in EVTYPE to lower, for easier matching
+data$EVTYPE <- tolower(data$EVTYPE)
+#Remove all numbers and points from EVTYPE
+data$EVTYPE <- gsub("[0-9]|\\.", "", data$EVTYPE)
+#Removing unnecessary multiple spaces in the middle of words
+data$EVTYPE <- gsub(" +", " ", data$EVTYPE)
+#Removing single spaces at the end and beginning of events
+data$EVTYPE <- gsub("(^\\s)|(\\s$)", "", data$EVTYPE)
+#Convert all backslashes to forward and remove extra spaces before or after them
+data$EVTYPE <- gsub("\\\\", "/", data$EVTYPE)
+data$EVTYPE <- gsub("() */+ *)|([ ]*-[ ]*)", "/",data$EVTYPE)
+length(unique(data$EVTYPE))
+```
+
+One way to approach this problem of inconsistent values would be to match them to the original 48 values, however, this would result to a unrealistic and strenuous process of guessing values and and names of more than 700 values!. I believe this would result in inaccurate mutation of the data.
+A more convenient method is to pay attention to specific values, after extracting the most frequent unique words, which, given the size of the data, are more likely to skew the analysis.
+
+```{r}
+words <- paste(data$EVTYPE, collapse = " ")
+uniqueWords <- strsplit(words, " ")[[1]]
+wordCount <- as.data.frame(table(uniqueWords)) %>% arrange(desc(Freq))
+
+head(wordCount,n = 50)
+```
+
+The first four words are repeated by a number of times more than a factor of 10 compared to others, therefore, more effort will be put into extracting their typos. Furthermore, similar events will be grouped using these frequent names. Example: "Marine Thunderstorm Wind" and "Thunderstorm wind" will be united under one category "thunderstorm". The NOAA Storms Database document was also consulted before using this method.
+
+```{r}
+#create a temporary data table to store new corrected values without altering the original
+temp <- data %>% as.data.table()
+
+#Using regex to repair typos
+temp[grepl("TSTM|THUNDERSTORM|LIGHTNING(?<!hail|rain|flood|flooding)$", EVTYPE, perl = TRUE, ignore.case = TRUE), EVTYPE := "thunderstorm"]
+temp[grepl("WIND|MICROBURST|(?=.*MICRO)(?=.*BURST)", EVTYPE, perl=TRUE, ignore.case=TRUE), EVTYPE:="wind"]
+temp[grepl("HAIL", EVTYPE, ignore.case=TRUE), EVTYPE:="hail"]
+temp[grepl("FLOOD|FLD", EVTYPE, perl=TRUE, ignore.case=TRUE), EVTYPE:="flood"]
+temp[grepl("TORNADO|FUNNEL|WATERSPOUT", EVTYPE, perl=TRUE, ignore.case=TRUE), EVTYPE:="tornado"]
+temp[grepl("SLEET|SNOW", EVTYPE, perl=TRUE, ignore.case=TRUE), EVTYPE:="sleet and snow"]
+temp[grepl("RAIN", EVTYPE, ignore.case=TRUE), EVTYPE:="rain"]
+temp[grepl("SURF|TIDE|SURGE|RIP|CURRENT", EVTYPE, perl=TRUE, ignore.case=TRUE), EVTYPE:="surftide"]
+temp[grepl("ICE|FREEZ|FROST|FROZEN|COLD|CHILL", EVTYPE, perl=TRUE, ignore.case=TRUE), EVTYPE:="cold"]
+temp[grepl("BLIZZARD|(?=.*ICE)(?=.*STORM)|(?=.*SNOW)(?=.*STORM)|(?=.*WINTER)(?=.*STORM)|(?=.*LAKE)(?=.*EFFECT)", EVTYPE, perl=TRUE, ignore.case=TRUE), EVTYPE:="blizzard"]
+temp[grepl("DUST", EVTYPE, ignore.case=TRUE), EVTYPE:="dust"]
+temp[grepl("WILDFIRE|(?=.*WILD)(?=.*FIRE)|(?=.*FOREST)(?=.*FIRE)", EVTYPE, perl=TRUE, ignore.case=TRUE), EVTYPE:="fire"]
+temp[grepl("HEAT|WARM", EVTYPE, perl=TRUE, ignore.case=TRUE), EVTYPE:="heat"]
+temp[grepl("(?=.*DRY)(?=.*WARM)|DROUGHT", EVTYPE, perl=TRUE, ignore.case=TRUE), EVTYPE:="drought"]
+temp[grepl("FOG", EVTYPE, ignore.case=TRUE), EVTYPE:="fog"]
+temp[grepl("HURRICANE|TYPHOON|(?=.*TROPICAL)(?=.*STORM)(?=.*depression)", EVTYPE, perl=TRUE, ignore.case=TRUE), EVTYPE:="tropical storm"]
+temp[grepl("LANDSLIDE", EVTYPE, ignore.case=TRUE), EVTYPE:="landslide"]
+temp[grepl("AVALANCHE", EVTYPE, ignore.case=TRUE), EVTYPE:="avalanche"]
+
+## Only observations with any of the new types of weather are kept.
+cleanData <- temp %>% filter(grepl("^thunderstorm$|^wind$|^hail$|^flood$|^tornado$|^sleet and snow$|^rain$|^surftide$|^cold$|^blizzard$|^dust$|^fire$|^heat$|^drought$|^fog$|^tropical storm$|^landslide$|^avalanche$", EVTYPE, perl=TRUE)) %>% as.data.frame()
+
+cleanData$EVTYPE <- as.factor(as.character(cleanData$EVTYPE))
+```
+
+Using the above categorization, as seen below, approximately 1% of the values under EVTYPE couldn't be matched. Out of a neraly 1 million observations, this is acceptable.
+
+```{r}
+paste((nrow(data) - nrow(cleanData)) * 100 /nrow(data), "%")
+```
+
+## 1.3. Processing property and crop damage
+
+The property and crop damage are stored in the original set under ```PROPDMG```, ```CROPDMG```, ```PROPDMGEXP``` and ```CROPDMGEXP```, where the variables ending with ```EXP```, are the value of exponents, example: ```k``` or ```K``` stand for kilos or thousand. Interpretation of these values can be found [here](https://rstudio-pubs-static.s3.amazonaws.com/58957_37b6723ee52b455990e149edde45e5b6.html). Total damage is assigned to a new column ```TOTDMG``` in the following code.
+
+```{r}
+#Converting symbols to their numeric interpretations
+#Property damage column
+cleanData$PROPDMG <- as.numeric(cleanData$PROPDMG)
+cleanData <- cleanData %>% mutate(PROP.DAMAGE = ifelse(grepl("h|H", PROPDMGEXP), PROPDMG * 10^2, 
+                ifelse(grepl("k|K", PROPDMGEXP), PROPDMG * 10^3,
+                ifelse(grepl("m|M", PROPDMGEXP), PROPDMG * 10^6,
+                ifelse(grepl("b|B", PROPDMGEXP), PROPDMG * 10^9,
+                ifelse(grepl("[0-8]", PROPDMGEXP), PROPDMG * 10,
+                ifelse(grepl("+", PROPDMGEXP), PROPDMG * 1, 0)))))))
+
+#Crop damage column
+cleanData$CROPDMG <- as.numeric(cleanData$CROPDMG)
+cleanData <- cleanData %>% mutate(CROP.DAMAGE = 
+                ifelse(grepl("h|H", CROPDMGEXP), CROPDMG * 10^2, 
+                ifelse(grepl("k|K", CROPDMGEXP), CROPDMG * 10^3,
+                ifelse(grepl("m|M", CROPDMGEXP), CROPDMG * 10^6,
+                ifelse(grepl("b|B", CROPDMGEXP), CROPDMG * 10^9,
+                ifelse(grepl("[0-8]", CROPDMGEXP), CROPDMG * 10,
+                ifelse(grepl("+", CROPDMGEXP), CROPDMG * 1, 0)))))))
+#Creating column of Total damage
+cleanData <- cleanData %>% mutate(TOTDMG = PROP.DAMAGE + CROP.DAMAGE)
+```
+
+# 2. RESULTS
+
+The following analysis will attempt the following:
+1. What types of weather events are most harmful to the population's health across all states.
+2. What types of weather events have greater economic consequences across all states.
+
+## 2.1. Health consequences
+
+For this analysis, the sum of the two variables ```INJURIES``` and ```FATALITIES``` will represent all health consequences conveyed to the population by each event type. 
+
+```{r}
+#Group the data by the type of event and arrange them in descending order
+cleanData <- transform(cleanData, factor(EVTYPE))
+healthRisk <- group_by(cleanData, EVTYPE)
+healthRisk <- healthRisk %>% 
+    summarize(fatalities = sum(FATALITIES),
+              injuries = sum(INJURIES),
+              total = sum(FATALITIES + INJURIES)) %>%
+    arrange(desc(total))
+head(healthRisk)
+```
+
+One can conclude from the table above, that events and episodes exhibiting events like tornadoes, thunderstorms, heat and floods have the more severe outcomes to the public's health.
+To represent this better, a bar plot is constructed in the next code. The data is also reshaped using the function ```melt()``` for easier plotting.
+
+```{r}
+#Create plot aesthetics
+plot <- healthRisk %>% reshape2::melt(id.vars = c(1,4), measure.vars = c(3,2)) %>%
+    ggplot(aes(x = reorder(EVTYPE, -total), y = value, fill = variable))
+
+#Print plot with bars of same variable in "dodge" position
+plot + 
+        geom_bar(position = "dodge", stat = "identity") +
+        xlab("Event type") + ylab("Injuries & Fatalities") +
+        ggtitle("Total Fatalities and Injuries for each Event in the USA (1950-2011)") +
+        theme(axis.text = element_text(angle = 90, hjust = 1, vjust = 0.25)) + 
+        scale_fill_manual(values = c("grey", "violetred"))
+```
+
+## 2.2. Economical Damage
+
+Similar to the previous approach, the economical damage can be interpreted, for each event, as the sum of property and crop damage, stored under the variable ```TOTDMG```
+
+```{r}
+#Group the data by the type of event and arrange them in descending order
+economicalDMG <- group_by(cleanData, EVTYPE)
+economicalDMG <- economicalDMG %>% 
+    summarize(propDMG = sum(PROP.DAMAGE),
+              cropDMG = sum(CROP.DAMAGE),
+              total = sum(TOTDMG)) %>%
+    arrange(desc(total))
+head(economicalDMG)
+```
+A conclusion can be drawn from the data above that flood events seem to have the greatest financial loss, and that property damage for the majority of the first 5 events is more significant.
+A plot is created in the code below to further inspect this data.
+
+```{r}
+#Create plot aesthetics
+plot <- economicalDMG %>% reshape2::melt(id.vars = c(1,4), measure.vars = c(2,3)) %>%
+    ggplot(aes(x = reorder(EVTYPE, -total), y = value, fill = variable))
+
+#Print plot with bars of same variable in "dodge" position
+plot + 
+        geom_bar(position = "dodge", stat = "identity") +
+        xlab("Event type") + ylab("Property and Crop Damage (USD)") +
+        ggtitle("Total Property and Crop damage for each Event in the USA (1950-2011)") +
+        theme(axis.text = element_text(angle = 90, hjust = 1, vjust = 0.25)) + 
+        scale_fill_manual(values = c("green3", "purple"))
+```
