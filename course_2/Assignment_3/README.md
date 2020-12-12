@@ -5,7 +5,7 @@ run by the U.S. Department of Health and Human Services. The purpose of the web 
 information about the quality of care at over 4,000 Medicare-certifed hospitals in the U.S. This dataset es-
 sentially covers all major U.S. hospitals.
 
-The assignment is to be graded with a quiz. Questions can be found in questions.md on this repository.
+The assignment is to be graded with a quiz questions, which unfortunately I cannot provide here, as this would violate Coursera's honor code.
 # Assignments
 
 ## 1. Plot the 30-day mortality rates for heart attack
