@@ -1,0 +1,1 @@
+This document presents an analysis of the NOAA Storm Database, addressing the economical and health consequences of severe weather events. I've attached in this folder the Rmarkdown and HTML files along with the generated graphs. The document explaining my analysis, can be found on [my rpubs](https://rpubs.com/OSafwat/703183)
